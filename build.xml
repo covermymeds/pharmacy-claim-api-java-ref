@@ -1,0 +1,31 @@
+<project name="My Project" default="compile" basedir=".">
+
+<property name="dir.src" value="src"/>
+<property name="dir.bin" value="bin"/>
+
+	<path id="class.path">
+	  <fileset dir="lib">
+	    <include name="**/*.jar" />
+	  </fileset>
+	</path>
+	
+	
+<target name="clean" description="Removing the all generated files.">
+<delete dir="${dir.bin}"/>
+</target>
+
+<target name="prepare" depends="clean">
+<mkdir dir="${dir.bin}"/>
+</target>
+
+<target name="compile" depends="prepare" description="Compilation of all source code.">
+<javac srcdir="${dir.src}" destdir="${dir.bin}">
+	<classpath refid="class.path" />
+	</javac>
+</target>
+
+<target name="jar" depends="compile" description="Generates Roseindia.jar file in to the 'dest' directory.">
+<jar jarfile="${dir.bin}/roseindia.jar" basedir="${dir.bin}"/>
+</target>
+
+</project>
