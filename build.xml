@@ -20,7 +20,7 @@
 
 	<target name="build" description="Compilation of all source code.">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
 			<classpath refid="class.path" />
 		</javac>
 	</target>
