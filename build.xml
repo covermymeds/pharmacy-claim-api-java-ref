@@ -1,31 +1,67 @@
-<project name="My Project" default="compile" basedir=".">
+<project name="My Project" default="run" basedir=".">
 
-<property name="dir.src" value="src"/>
-<property name="dir.bin" value="bin"/>
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build" />
+	<property name="lib.dir" value="lib" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="jar.classes.dir" value="${jar.dir}/classes" />
+	<property name="main.class" value="com.covermymeds.claimserverpost.ClaimServerPost" />
 
 	<path id="class.path">
-	  <fileset dir="lib">
-	    <include name="**/*.jar" />
-	  </fileset>
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
-	
-	
-<target name="clean" description="Removing the all generated files.">
-<delete dir="${dir.bin}"/>
-</target>
 
-<target name="prepare" depends="clean">
-<mkdir dir="${dir.bin}"/>
-</target>
+	<target name="clean" description="Removing the all generated files.">
+		<delete dir="${build.dir}" />
+	</target>
 
-<target name="compile" depends="prepare" description="Compilation of all source code.">
-<javac srcdir="${dir.src}" destdir="${dir.bin}">
-	<classpath refid="class.path" />
-	</javac>
-</target>
+	<target name="build" description="Compilation of all source code.">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<classpath refid="class.path" />
+		</javac>
+	</target>
 
-<target name="jar" depends="compile" description="Generates Roseindia.jar file in to the 'dest' directory.">
-<jar jarfile="${dir.bin}/roseindia.jar" basedir="${dir.bin}"/>
-</target>
+	<target name="input-runargs" unless="args" description="prompt for command line arguments if not present">
+		<input addproperty="args" message="Type command line arguments" />
+	</target>
 
+	<target name="run" depends="build, input-runargs" description="Running Program">
+		<java classname="${main.class}">
+			<arg line="${args}" />
+			<classpath>
+				<path refid="class.path" />
+				<path location="${classes.dir}" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="setup-jar-classes">
+		<mkdir dir="${jar.classes.dir}" />
+		<copy todir="${jar.classes.dir}">
+			<fileset dir="${classes.dir}">
+				<include name="**\*.class" />
+			</fileset>
+		</copy>
+		<unzip dest="${jar.classes.dir}">
+			<fileset dir="${lib.dir}" includes="*.jar" />
+		</unzip>
+	</target>
+
+	<target name="clean-jar-classes">
+		<delete dir="${jar.classes.dir}" />
+	</target>
+
+	<target name="dist" depends="build, setup-jar-classes">
+		<jar basedir="${jar.classes.dir}" destfile="${jar.dir}/${main.class}.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${main.class}" />
+			</manifest>
+		</jar>
+		<ant target="clean-jar-classes" />
+	</target>
 </project>
