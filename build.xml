@@ -28,7 +28,7 @@
 	<target name="input-runargs" unless="args" description="prompt for command line arguments if not present">
 		<input addproperty="args" message="Type command line arguments" />
 	</target>
-
+	
 	<target name="run" depends="build, input-runargs" description="Running Program">
 		<java classname="${main.class}">
 			<arg line="${args}" />

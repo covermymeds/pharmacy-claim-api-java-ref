@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.HttpClient;
@@ -32,7 +33,9 @@ public class ClaimServerPost {
 
 	private static Map<Integer, String> errors = createErrors();
 	private static final int FAIL = 1;
+	private static final int EMPTYRESPONSE = 2;
 
+	// Parameters to send in POST
 	private static String url = null;
 	private static String username = null;
 	private static String password = null;
@@ -79,47 +82,73 @@ public class ClaimServerPost {
 			// Create HttpPost and set its Entity
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setEntity(entity);
+			boolean failed = false;
 			try {
 				// Execute POST with BasicResponseHandler object
 				String response = client.execute(httpPost,
 						new BasicResponseHandler());
-				String[] addresses = response.split("\n");
-				// If supported and suppress not present, open browser and
-				// point to each address
-				if (!parsedObject.getSuppress()) {
-					if (Desktop.isDesktopSupported()) {
-						Desktop desktop = Desktop.getDesktop();
-						if (desktop.isSupported(Desktop.Action.BROWSE)) {
+
+				// Check for empty response;
+				if (response.isEmpty()) {
+					System.out.println("Warning: Empty response, check parameters entered.");
+					System.exit(EMPTYRESPONSE);
+				} else {
+					String[] addresses = response.split("\n");
+
+					// If supported and suppress not present, open browser and
+					// point to each address
+					if (parsedObject.isSuppress()) {
+						if (parsedObject.isVerbose()) {
 							for (String address : addresses) {
-								desktop.browse(new URI(address));
+								System.out.println("Request created at: "+ address);
 							}
 						} else {
-							System.err
-									.println("Browse action is not supported.");
-							System.exit(FAIL);
+							if (Desktop.isDesktopSupported()) {
+								Desktop desktop = Desktop.getDesktop();
+								if (desktop.isSupported(Desktop.Action.BROWSE)) {
+									for (String address : addresses) {
+										if (parsedObject.isVerbose()) {
+											System.out.println("Opening browser to: " + address);
+										}
+										desktop.browse(new URI(address));
+									}
+								} else {
+									System.err.println("Browse action is not supported.");
+									failed = true;
+								}
+							} else {
+								System.err.println("Desktop is not supported.");
+								failed = true;
+							}
 						}
-					} else {
-						System.err.println("Desktop is not supported.");
-						System.exit(FAIL);
 					}
 				}
 			}
 			// Catch any errors(400,500...) and handle them as appropriate
 			catch (HttpResponseException e) {
-				if (parsedObject.getVerbose()) {
-					System.err.println(e.getStatusCode()
-							+ errors.get(e.getStatusCode()));
+				if (parsedObject.isVerbose()) {
+					System.err.println(e.getStatusCode() + errors.get(e.getStatusCode()));
 				} else {
 					System.err.println(e.getStatusCode());
 				}
-				System.exit(FAIL);
+				failed = true;
+			}
+			// Catch generally any malformed urls passed to HttpPost object
+			catch (IllegalStateException e) {
+				System.err.println("Error: " + e.getMessage()
+						+ " Check server url. Value passed was "
+						+ parsedObject.getService_url());
+				failed = true;
 			} finally {
 				// Close all connections and free up system resources
 				client.getConnectionManager().shutdown();
+				if (failed) {
+					System.exit(FAIL);
+				}
 			}
 		} else {
 			System.err
-					.println("Error: must specify a claim file argument or supply claim directly");
+					.println("Error: must specify a claim file argument or '-' to read from stdin");
 			System.exit(FAIL);
 		}
 	}
@@ -131,7 +160,8 @@ public class ClaimServerPost {
 	private static JCommandLine buildParser(String[] args)
 			throws ParameterException {
 		JCommandLine parsedObject = new JCommandLine();
-		JCommander command = new JCommander(parsedObject, args);
+		//Parsed Object by calling JCommander Constructor
+		new JCommander(parsedObject, args);
 		return parsedObject;
 	}
 
@@ -140,12 +170,7 @@ public class ClaimServerPost {
 	 */
 	private static boolean validateClaim(JCommandLine parsedObject) {
 		File claimFile = parsedObject.getClaimInFile();
-		if (claimFile == null) {
-			List<String> claimString = parsedObject.getClaim();
-			return (claimString.size() > 0);
-		} else {
-			return claimFile.exists();
-		}
+		return ((claimFile != null && claimFile.exists()) || parsedObject.readFromStdin());
 	}
 
 	/*
@@ -153,8 +178,10 @@ public class ClaimServerPost {
 	 */
 	private static String getClaim(JCommandLine parsedObject)
 			throws IOException {
-		if (parsedObject.getClaim().size() > 0) {
-			return parsedObject.getClaim().get(0);
+		if (parsedObject.readFromStdin()) {
+			System.out.println("Enter claim:");
+			Scanner stdin = new Scanner(System.in);
+			return stdin.nextLine();
 		} else {
 			File claimFile = parsedObject.getClaimInFile();
 			BufferedReader reader = new BufferedReader(
@@ -178,8 +205,7 @@ public class ClaimServerPost {
 		result.put(403, ". Valid CoverMyMeds authentication required.");
 		result.put(404, ". Resource not found or missing parameters.");
 		result.put(408, ". Server timed out. Try again.");
-		result.put(500,
-				". Internal Service Erro. Try again, or contact admin if error persists.");
+		result.put(500, ". Internal Service Error. Try again, or contact admin if error persists.");
 		return Collections.unmodifiableMap(result);
 	}
 

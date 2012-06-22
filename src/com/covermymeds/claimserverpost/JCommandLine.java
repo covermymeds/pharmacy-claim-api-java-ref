@@ -29,15 +29,15 @@ public class JCommandLine {
 	@Parameter(names={"-c","--claim"},description="File where claim is present", converter=FileConverter.class)
 	private File claimFile;
 	
-	@Parameter(description = "The claim itself if --claim, -c is not supplied surrounded in \"\"s")
-	private List<String> claim = new ArrayList<String>();
-
+	@Parameter(names={"-"},description="Used when claim will be provided through stdin")
+	private Boolean readFromStdin = false;
+	
 	public File getClaimInFile() {
 		return claimFile;
 	}
-
-	public List<String> getClaim() {
-		return claim;
+	
+	public boolean readFromStdin() {
+		return readFromStdin;
 	}
 
 	public String getFaxNumber() {
@@ -52,7 +52,7 @@ public class JCommandLine {
 		return password;
 	}
 
-	public Boolean getVerbose() {
+	public Boolean isVerbose() {
 		return verbose;
 	}
 
@@ -60,7 +60,7 @@ public class JCommandLine {
 		return service_url;
 	}
 
-	public Boolean getSuppress() {
+	public Boolean isSuppress() {
 		return suppress;
 	}
 }
