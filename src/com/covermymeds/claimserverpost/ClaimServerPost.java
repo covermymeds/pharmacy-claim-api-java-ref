@@ -36,7 +36,6 @@ public class ClaimServerPost {
 	private static final int EMPTYRESPONSE = 2;
 
 	// Parameters to send in POST
-	//Testin git
 	private static String url = null;
 	private static String username = null;
 	private static String password = null;
