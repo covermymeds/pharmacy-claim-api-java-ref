@@ -59,7 +59,7 @@ public class ClaimServerPost {
 		}
 
 		// Validate that a claim is present
-		if (claimSuuplied(parsedObject)) {
+		if (claimSupplied(parsedObject)) {
 			// Assign values to POST parameters
 			url = parsedObject.getService_url();
 			username = parsedObject.getUsername();
@@ -168,7 +168,7 @@ public class ClaimServerPost {
 	/*
 	 * Checks that a claim is present as either a file or directly as a String
 	 */
-	private static boolean claimSuuplied(JCommandLine parsedObject) {
+	private static boolean claimSupplied(JCommandLine parsedObject) {
 		File claimFile = parsedObject.getClaimInFile();
 		return ((claimFile != null && claimFile.exists()) || parsedObject.readFromStdin());
 	}
