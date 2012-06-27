@@ -40,7 +40,7 @@ public class ClaimServerPost {
 	private static String username = null;
 	private static String password = null;
 	private static String claim = null;
-	private static String fax = null;
+	private static String apiKey = null;
 
 	/*
 	 * Sample Post request to claims server.
@@ -59,12 +59,12 @@ public class ClaimServerPost {
 		}
 
 		// Validate that a claim is present
-		if (validateClaim(parsedObject)) {
+		if (claimSuuplied(parsedObject)) {
 			// Assign values to POST parameters
 			url = parsedObject.getService_url();
 			username = parsedObject.getUsername();
 			password = parsedObject.getPassword();
-			fax = parsedObject.getFaxNumber();
+			apiKey = parsedObject.getApiKey();
 			claim = getClaim(parsedObject);
 
 			// Create an instance of HttpClient.
@@ -75,7 +75,7 @@ public class ClaimServerPost {
 					new BasicNameValuePair("username", username),
 					new BasicNameValuePair("password", password),
 					new BasicNameValuePair("ncpdp_claim", claim),
-					new BasicNameValuePair("physician_fax", fax));
+					new BasicNameValuePair("physician_fax", apiKey));
 			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams,
 					"UTF-8");
 
@@ -168,7 +168,7 @@ public class ClaimServerPost {
 	/*
 	 * Checks that a claim is present as either a file or directly as a String
 	 */
-	private static boolean validateClaim(JCommandLine parsedObject) {
+	private static boolean claimSuuplied(JCommandLine parsedObject) {
 		File claimFile = parsedObject.getClaimInFile();
 		return ((claimFile != null && claimFile.exists()) || parsedObject.readFromStdin());
 	}
@@ -202,10 +202,27 @@ public class ClaimServerPost {
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();
-		result.put(403, ". Valid CoverMyMeds authentication required.");
-		result.put(404, ". Resource not found or missing parameters.");
-		result.put(408, ". Server timed out. Try again.");
-		result.put(500, ". Internal Service Error. Try again, or contact admin if error persists.");
+		result.put(400, ". Oops, there was a connection problem. Please"
+				+ " try one more time, then contact CoverMyMeds at 1-866-452-"
+				+ "5017/help@covermymeds.com and they will help you diagnose"
+				+ " this issue.");
+		result.put(403, ".Oops, login failed for the username or password that"
+						+ " was submitted. Please check the username and password in your"
+						+ " account settings in your Pharmacy System and at the CMM website to"
+						+ " make sure they match. If you still have trouble, please contact"
+						+ " CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
+						+ " help you fix this issue.");
+		result.put(404, ". Oops, there was a problem. Please check the username and"
+						+ " password in your account settings in your Pharmacy System and at the"
+						+ " CMM website to make sure they match. If you still have trouble, please"
+						+ " contact CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
+						+ " help you fix this issue.");
+		result.put(408, ". Oops, there was a timeout. Please try the request again in one"
+						+ " minute. If you still have trouble, please contact CoverMyMeds at 1-866-452"
+						+ "-5017/help@covermymeds.com and they will help you fix this issue.");
+		result.put(500, ". Oops, there was a problem. Please try the request again in one minute."
+						+ " If you still have trouble, please contact CoverMyMeds at 1-866-452-5017"
+						+ "/help@covermymeds.com and they will help you diagnose this issue.");
 		return Collections.unmodifiableMap(result);
 	}
 
