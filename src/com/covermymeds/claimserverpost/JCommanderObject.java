@@ -1,13 +1,11 @@
 package com.covermymeds.claimserverpost;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-public class JCommandLine {
+public class JCommanderObject {
 
 	@Parameter(names = { "-a", "--api_key" }, description = "API key. Assigned by CMM", required = true)
 	private String apiKey;
@@ -22,7 +20,7 @@ public class JCommandLine {
 	private Boolean verbose = false;
 
 	@Parameter(names = { "-s", "--service" }, description = "URL of the service which to POST")
-	private String service_url = "https://claims.covermymeds.com/cmmimport/";
+	private String serviceUrl = "https://claims.covermymeds.com/cmmimport/";
 
 	@Parameter(names = { "-x", "--suppress-browser" }, description = "suppress opening a browser window for each URL")
 	private Boolean suppress = false;
@@ -58,7 +56,7 @@ public class JCommandLine {
 	}
 
 	public String getService_url() {
-		return service_url;
+		return serviceUrl;
 	}
 
 	public Boolean isSuppress() {
