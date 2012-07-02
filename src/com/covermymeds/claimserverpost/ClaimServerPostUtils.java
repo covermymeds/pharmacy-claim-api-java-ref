@@ -28,30 +28,29 @@ import com.beust.jcommander.ParameterException;
 
 public class ClaimServerPostUtils {
 
-	private static Map<Integer, String> errors = ClaimServerPostUtils.createErrors();
+	private static Map<Integer, String> errors = ClaimServerPostUtils
+			.createErrors();
 
-	/*
-	 * Checks that a claim is present as either a file or directly as a String
-	 */
+	private static final char START_OF_CLAIM = '\2';
+	private static final char END_OF_CLAIM = '\3';
+
+	
 	public static boolean claimSupplied(File claimFile, boolean readFromStdin) {
 		return ((claimFile != null && claimFile.exists()) || readFromStdin);
 	}
 
-	/*
-	 * Returns the claim as a String
-	 */
 	public static String getClaim(File claimFile, boolean readFromStdin)
 			throws IOException {
 		if (readFromStdin) {
 			System.out.println("Enter claim:");
 			Scanner stdin = new Scanner(System.in);
 			String input = stdin.nextLine();
-			if (input.length() >= 2 && input.charAt(0) != (char) 2) {
-				input = (char) 2 + input;
+			if (input.length() >= 2 && input.charAt(0) != START_OF_CLAIM) {
+				input = START_OF_CLAIM + input;
 			}
 			if (input.length() >= 2
-					&& input.charAt(input.length() - 1) != (char) 3) {
-				input = input + (char) 3;
+					&& input.charAt(input.length() - 1) != END_OF_CLAIM) {
+				input += END_OF_CLAIM;
 			}
 			return input;
 		} else {
@@ -75,11 +74,9 @@ public class ClaimServerPostUtils {
 	}
 
 	public static JCommanderObject parseCommandLine(String[] args) {
-		// Parse commandLine options
 		JCommanderObject parsedObject = null;
 		try {
 			parsedObject = new JCommanderObject();
-			// Parsed Object by calling JCommander Constructor
 			new JCommander(parsedObject, args);
 		} catch (ParameterException e) {
 			System.err.println("Error: " + e.getMessage());
@@ -90,16 +87,13 @@ public class ClaimServerPostUtils {
 
 	public static UrlEncodedFormEntity encodeParameters(
 			JCommanderObject parsedObject) throws IOException {
-
-		// Creat and Encode parameters
 		List<BasicNameValuePair> params = Arrays.asList(
 				new BasicNameValuePair("username", parsedObject.getUsername()),
 				new BasicNameValuePair("password", parsedObject.getPassword()),
 				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
 						.getClaim(parsedObject.getClaimInFile(),
 								parsedObject.readFromStdin())),
-				new BasicNameValuePair("physician_fax", parsedObject
-						.getApiKey()));
+				new BasicNameValuePair("api_key", parsedObject.getApiKey()));
 
 		return new UrlEncodedFormEntity(params, "UTF-8");
 	}
@@ -114,14 +108,11 @@ public class ClaimServerPostUtils {
 
 		List<String> addresses = null;
 		try {
-			// Execute POST with BasicResponseHandler object
 			String response = client.execute(httpPost,
 					new BasicResponseHandler());
 
 			addresses = Arrays.asList(response.split("\n"));
-
 		}
-		// Catch any errors(400,500...) and handle them as appropriate
 		catch (HttpResponseException e) {
 			String errorMessage = String.valueOf(e.getStatusCode()) + " "
 					+ e.getMessage();
@@ -129,7 +120,6 @@ public class ClaimServerPostUtils {
 					+ errors.get(e.getStatusCode()) : errorMessage);
 			System.err.println(errorMessage);
 		} finally {
-			// Close all connections and free up system resources
 			client.getConnectionManager().shutdown();
 		}
 		return addresses;
@@ -137,8 +127,6 @@ public class ClaimServerPostUtils {
 
 	public static void openBrowser(List<String> addresses, boolean verbose)
 			throws IOException, URISyntaxException {
-		// If supported and suppress not present, open browser and
-		// point to each address
 		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			if (desktop.isSupported(Desktop.Action.BROWSE)) {

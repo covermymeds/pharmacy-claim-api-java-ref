@@ -16,6 +16,8 @@ import org.apache.http.client.ClientProtocolException;
  * 
  * 
  */
+
+//TODO Document with javadoc, Specify need for 2 libraries.
 public class ClaimServerPost {
 
 	/*
@@ -41,8 +43,7 @@ public class ClaimServerPost {
 			}
 			
 		} else if(parsedObject != null){
-			System.err
-					.println("Error: must specify a claim file argument or '-' to read from stdin");
+			System.err.println("Error: must specify a claim file argument or '-' to read from stdin");
 		}
 	}
 }
