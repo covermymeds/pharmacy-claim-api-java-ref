@@ -51,7 +51,7 @@ public class ClaimServerPost {
 		JCommanderObject parsedObject = ClaimServerPost.parseCommandLine(args);
 
 		// Validate that a claim is present
-		if (parsedObject != null && ClaimServerPost.claimSupplied(parsedObject)) {
+		if (parsedObject != null && ClaimServerPost.claimSupplied(parsedObject.getClaimInFile(), parsedObject.readFromStdin())) {
 
 			UrlEncodedFormEntity encodedParameters = ClaimServerPost
 					.encodeParameters(parsedObject);
@@ -59,10 +59,10 @@ public class ClaimServerPost {
 			List<String> addresses = ClaimServerPost.sendHttpRequest(
 					parsedObject.getService_url(), encodedParameters,
 					parsedObject.isVerbose());
-			if(!parsedObject.isSuppress()) {
+			if(addresses != null && !parsedObject.isSuppress()) {
 				ClaimServerPost.openBrowser(addresses, parsedObject.isVerbose());
 			}
-		} else {
+		} else if(parsedObject != null){
 			System.err
 					.println("Error: must specify a claim file argument or '-' to read from stdin");
 		}
@@ -71,10 +71,8 @@ public class ClaimServerPost {
 	/*
 	 * Checks that a claim is present as either a file or directly as a String
 	 */
-	private static boolean claimSupplied(JCommanderObject parsedObject) {
-		File claimFile = parsedObject.getClaimInFile();
-		return ((claimFile != null && claimFile.exists()) || parsedObject
-				.readFromStdin());
+	private static boolean claimSupplied(File claimFile, boolean readFromStdin) {
+		return ((claimFile != null && claimFile.exists()) || readFromStdin);
 	}
 
 	/*
@@ -86,11 +84,12 @@ public class ClaimServerPost {
 			System.out.println("Enter claim:");
 			Scanner stdin = new Scanner(System.in);
 			String input = stdin.nextLine();
-			if(input.length() >= 2 && input.charAt(0) != (char)02) {
-				input = (char)02 + input;
+			input = input.substring(1,input.length()-1);
+			if(input.length() >= 2 && input.charAt(0) != (char)2) {
+				input = (char)2 + input;
 			}
-			if(input.length() >= 2 && input.charAt(input.length()-1) != (char)03) {
-				input += (char)03;
+			if(input.length() >= 2 && input.charAt(input.length()-1) != (char)3) {
+				input = input + (char)3;
 			}
 			return input;
 		} else {
@@ -150,15 +149,6 @@ public class ClaimServerPost {
 		return Collections.unmodifiableMap(result);
 	}
 
-	/*
-	 * Prints possible options associated with object
-	 */
-	private static void printUsage(Object object) {
-		JCommander help = new JCommander(object);
-		help.setProgramName("ClaimServerPost");
-		help.usage();
-	}
-
 	private static JCommanderObject parseCommandLine(String[] args) {
 		// Parse commandLine options
 		JCommanderObject parsedObject = null;
@@ -168,7 +158,6 @@ public class ClaimServerPost {
 			new JCommander(parsedObject, args);
 		} catch (ParameterException e) {
 			System.err.println("Error: " + e.getMessage());
-			printUsage(new JCommanderObject());
 			parsedObject = null;
 		}
 		return parsedObject;
