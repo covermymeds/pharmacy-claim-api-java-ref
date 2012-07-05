@@ -49,6 +49,12 @@ public class JCommanderOptions {
 	@Parameter(names = { "-v", "--verbose" }, description = "show verbose output")
 	private Boolean verbose = false;	
 
+	/**
+	 * Default constructor.
+	 */
+	public JCommanderOptions() {
+		//Default constructor
+	}
 	
 	/**
 	 * Returns the file holding the claim or <code>null</code> if not specified.
@@ -67,8 +73,8 @@ public class JCommanderOptions {
 	}
 
 	/**
-	 * Returns the apiKey passed into 
-	 * @return
+	 * Returns the api key 
+	 * @return the api key
 	 */
 	public String getApiKey() {
 		return apiKey;
@@ -99,8 +105,8 @@ public class JCommanderOptions {
 	}
 
 	/**
-	 * Returns the url
-	 * @return the url 
+	 * Returns the service url
+	 * @return the service url
 	 */
 	public String getServiceUrl() {
 		return serviceUrl;

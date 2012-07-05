@@ -58,10 +58,10 @@ public class ClaimServerPostUtils {
 	}
 
 	/**
-	 * Returns a populate JCommanderOptions object or <code>null</code> 
+	 * Returns a populate <code>JCommanderOptions</code> object or <code>null</code> 
 	 * if any parsing errors occur.
 	 * @param args the arguments to be parsed
-	 * @return a populated JCommanderOptions object or <code>null</code>
+	 * @return a populated <code>JCommanderOptions</code> object or <code>null</code>
 	 * if parsing errors occur
 	 */
 	public static JCommanderOptions parseCommandLine(String[] args) {
@@ -81,7 +81,7 @@ public class ClaimServerPostUtils {
 	/**
 	 * Returns a URLEncodedFormEntity that holds the parsedOptions's 
 	 * 			parameters: username,password,claim, and api key.
-	 * @param parsedOptions - the object holding the values to be encoded
+	 * @param parsedOptions the object holding the values to be encoded
 	 * @return a URLEncodedFormEntity that holds the parsedOptions's
 	 * 			parameters: username, password, claim, and api key
 	 * @throws IOException
@@ -103,9 +103,8 @@ public class ClaimServerPostUtils {
 	 * Sends a request to the serviceURL using the encodedParameters. Returns a 
 	 * list of the returned urls as strings or <code>null</code> if an error occurs.
 	 * @param serviceUrl the url to send the request to
-	 * @param encodedParameters the parameters to use in the request
-	 * @param verbose specifies whether detailed information should be displayed while
-	 * making the request
+	 * @param encodedParameters the parameters being sent in the request
+	 * @param verbose specifies whether output should be verbose or not.
 	 * @return a list of the returned urls as strings or <code>null</code>
 	 * if an error occurs.
 	 * @throws ClientProtocolException
@@ -146,8 +145,7 @@ public class ClaimServerPostUtils {
 	 * Opens the the user's default browser to each address in the list
 	 * of addresses.
 	 * @param addresses the string urls to open the default browser to.
-	 * @param verbose specifies whether detailed information should be displayed while
-	 * opening the browser
+	 * @param verbose specifies whether output should be verbose or not.
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
@@ -226,7 +224,8 @@ public class ClaimServerPostUtils {
 	/**
 	 * Returns a map containing http error messages, associated with their
 	 * error code.
-	 * @return
+	 * @return a map containting basic http errors referenced by their error 
+	 * codes.
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();

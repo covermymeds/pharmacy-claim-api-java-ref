@@ -10,7 +10,7 @@ import org.apache.http.client.ClientProtocolException;
 /**
  * &copy 2012 CoverMyMeds <br/>
  * A Java reference to making a request using the
- * <a href="http://www.covermymeds.com/main/pharmacy_claim_api#what-data-to-send">
+ * <a href="http://www.covermymeds.com/main/pharmacy_claim_api">
  * CoverMyMeds' Pharmacy API</a>.
  * <br/>
  * <br/>
@@ -22,7 +22,8 @@ import org.apache.http.client.ClientProtocolException;
  * 	</ul>
  * </div>
  * 	@author Juan Roman
- *
+ * @see <a href="http://hc.apache.org/httpcomponents-client-ga/index.html">Apache HttpClient</a>,
+ * <a href="http://jcommander.org">JCommander</a>
  */
 public class ClaimServerPost {
 
