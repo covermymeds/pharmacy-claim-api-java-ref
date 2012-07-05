@@ -229,25 +229,25 @@ public class ClaimServerPostUtils {
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();
-		result.put(400, " Oops, there was a connection problem. Please"
+		result.put(400, ". Oops, there was a connection problem. Please"
 				+ " try one more time, then contact CoverMyMeds at 1-866-452-"
 				+ "5017/help@covermymeds.com and they will help you diagnose"
 				+ " this issue.");
-		result.put(403, " Oops, login failed for the username or password that"
+		result.put(403, ". Oops, login failed for the username or password that"
 				+ " was submitted. Please check the username and password in your"
 				+ " account settings in your Pharmacy System and at the CMM website to"
 				+ " make sure they match. If you still have trouble, please contact"
 				+ " CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
 				+ " help you fix this issue.");
-		result.put(404, " Oops, there was a problem. Please check the username and"
+		result.put(404, ". Oops, there was a problem. Please check the username and"
 				+ " password in your account settings in your Pharmacy System and at the"
 				+ " CMM website to make sure they match. If you still have trouble, please"
 				+ " contact CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
 				+ " help you fix this issue.");
-		result.put(408, " Oops, there was a timeout. Please try the request again in one"
+		result.put(408, ". Oops, there was a timeout. Please try the request again in one"
 				+ " minute. If you still have trouble, please contact CoverMyMeds at 1-866-452"
 				+ "-5017/help@covermymeds.com and they will help you fix this issue.");
-		result.put(500, " Oops, there was a problem. Please try the request again in one minute."
+		result.put(500, ". Oops, there was a problem. Please try the request again in one minute."
 				+ " If you still have trouble, please contact CoverMyMeds at 1-866-452-5017"
 				+ "/help@covermymeds.com and they will help you diagnose this issue.");
 		return Collections.unmodifiableMap(result);
