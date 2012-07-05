@@ -25,12 +25,10 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 /**
+ * &copy 2012 CoverMyMeds <br/>
  * Utility class used to assist in the setting up, initiating, and processing of 
  * http requests.
- * <div>
  * 	@author Juan Roman
- * </div>
- * &copy 2012 CoverMyMeds
  */
 public class ClaimServerPostUtils {
 
@@ -60,43 +58,44 @@ public class ClaimServerPostUtils {
 	}
 
 	/**
-	 * Returns a JCommanderObject whose fields are populated passed
-	 * on the passed arguments or <code>null</code> if any parsing errors
-	 * occur.
+	 * Returns a populate JCommanderOptions object or <code>null</code> 
+	 * if any parsing errors occur.
 	 * @param args the arguments to be parsed
-	 * @return a populated JCommanderObject or null if parsing errors
-	 * occur
+	 * @return a populated JCommanderOptions object or <code>null</code>
+	 * if parsing errors occur
 	 */
-	public static JCommanderObject parseCommandLine(String[] args) {
-		JCommanderObject parsedObject = null;
+	public static JCommanderOptions parseCommandLine(String[] args) {
+		JCommanderOptions parsedOptions = null;
 		try {
-			parsedObject = new JCommanderObject();
-			new JCommander(parsedObject, args);
+			parsedOptions = new JCommanderOptions();
+			//Creating a new instance of JCommander initiates parsing
+			//and populates passed in object
+			new JCommander(parsedOptions, args);
 		} catch (ParameterException e) {
 			System.err.println("Error: " + e.getMessage());
-			parsedObject = null;
+			parsedOptions = null;
 		}
-		return parsedObject;
+		return parsedOptions;
 	}
 
 	/**
-	 * Returns a URLEncodedFormEntity that holds the parsedObject's 
+	 * Returns a URLEncodedFormEntity that holds the parsedOptions's 
 	 * 			parameters: username,password,claim, and api key.
-	 * @param parsedObject - the object holding the values to be encoded
-	 * @return a URLEncodedFormEntity that holds the parsedObject's 
-	 * 			parameters: username,password,claim, and api key
+	 * @param parsedOptions - the object holding the values to be encoded
+	 * @return a URLEncodedFormEntity that holds the parsedOptions's
+	 * 			parameters: username, password, claim, and api key
 	 * @throws IOException
 	 */
 	public static UrlEncodedFormEntity encodeParameters(
-			JCommanderObject parsedObject) throws IOException {
+			JCommanderOptions parsedOptions) throws IOException {
 		List<BasicNameValuePair> params = Arrays.asList(
-				new BasicNameValuePair("username", parsedObject.getUsername()),
-				new BasicNameValuePair("password", parsedObject.getPassword()),
+				new BasicNameValuePair("username", parsedOptions.getUsername()),
+				new BasicNameValuePair("password", parsedOptions.getPassword()),
 				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
-						.getClaim(parsedObject.getClaimInFile(),
-								parsedObject.readFromStdin())),
-				new BasicNameValuePair("api_dkey", parsedObject.getApiKey()));
-//TODO change back to api_key
+						.getClaim(parsedOptions.getClaimFile(),
+								parsedOptions.readFromStdin())),
+				new BasicNameValuePair("api_dkey", parsedOptions.getApiKey()));
+		//TODO change back to api_key
 		return new UrlEncodedFormEntity(params, "UTF-8");
 	}
 
@@ -131,10 +130,8 @@ public class ClaimServerPostUtils {
 			}
 		}
 		catch (HttpResponseException e) {
-			String errorMessage = String.valueOf(e.getStatusCode()) + " "
-					+ e.getMessage();
-			errorMessage = (verbose ? errorMessage + " "
-					+ errors.get(e.getStatusCode()) : errorMessage);
+			String errorMessage = String.valueOf(e.getStatusCode()) + " " + e.getMessage();
+			errorMessage = (verbose ? errorMessage + errors.get(e.getStatusCode()) : errorMessage);
 			System.err.println(errorMessage);
 		} finally {
 		     // When HttpClient instance is no longer needed,
@@ -187,7 +184,7 @@ public class ClaimServerPostUtils {
 			throws IOException {
 		/* 
 		 * Reading from stdin take precedence over the file so check
-		 * it first 
+		 * it first
 		 */
 		if (readFromStdin) {
 			System.out.println("Enter claim:");
@@ -196,17 +193,17 @@ public class ClaimServerPostUtils {
 			
 			/*
 			 * Check that the STX and ETX characters surround the claim and
-			 * if not wrap the them around the claim
+			 * if not wrap them around the claim
 			 */
 			if (input.length() >= 2 && input.charAt(0) != START_OF_CLAIM) {
 				input = START_OF_CLAIM + input;
 			}
-			if (input.length() >= 2
-					&& input.charAt(input.length() - 1) != END_OF_CLAIM) {
+			if (input.length() >= 2 && input.charAt(input.length() - 1) != END_OF_CLAIM) {
 				input += END_OF_CLAIM;
 			}
 			return input;
 		} else {
+			//Read claimFile into a string
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new FileReader(claimFile));
@@ -233,25 +230,25 @@ public class ClaimServerPostUtils {
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();
-		result.put(400, "Oops, there was a connection problem. Please"
+		result.put(400, " Oops, there was a connection problem. Please"
 				+ " try one more time, then contact CoverMyMeds at 1-866-452-"
 				+ "5017/help@covermymeds.com and they will help you diagnose"
 				+ " this issue.");
-		result.put(403, "Oops, login failed for the username or password that"
+		result.put(403, " Oops, login failed for the username or password that"
 				+ " was submitted. Please check the username and password in your"
 				+ " account settings in your Pharmacy System and at the CMM website to"
 				+ " make sure they match. If you still have trouble, please contact"
 				+ " CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
 				+ " help you fix this issue.");
-		result.put(404, "Oops, there was a problem. Please check the username and"
+		result.put(404, " Oops, there was a problem. Please check the username and"
 				+ " password in your account settings in your Pharmacy System and at the"
 				+ " CMM website to make sure they match. If you still have trouble, please"
 				+ " contact CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
 				+ " help you fix this issue.");
-		result.put(408, "Oops, there was a timeout. Please try the request again in one"
+		result.put(408, " Oops, there was a timeout. Please try the request again in one"
 				+ " minute. If you still have trouble, please contact CoverMyMeds at 1-866-452"
 				+ "-5017/help@covermymeds.com and they will help you fix this issue.");
-		result.put(500, "Oops, there was a problem. Please try the request again in one minute."
+		result.put(500, " Oops, there was a problem. Please try the request again in one minute."
 				+ " If you still have trouble, please contact CoverMyMeds at 1-866-452-5017"
 				+ "/help@covermymeds.com and they will help you diagnose this issue.");
 		return Collections.unmodifiableMap(result);

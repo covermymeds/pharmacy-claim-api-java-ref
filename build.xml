@@ -3,6 +3,7 @@
 	<property name="src.dir" value="src" />
 	<property name="build.dir" value="build" />
 	<property name="lib.dir" value="lib" />
+	<property name="doc.dir" value="doc" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="jar.classes.dir" value="${jar.dir}/classes" />
@@ -18,6 +19,10 @@
 		<delete dir="${build.dir}" />
 	</target>
 
+	<target name="clean-docs">
+		<delete dir="${doc.dir}" />
+	</target>
+	
 	<target name="build" description="Compilation of all source code.">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">

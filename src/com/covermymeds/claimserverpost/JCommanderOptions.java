@@ -1,12 +1,11 @@
 package com.covermymeds.claimserverpost;
 
 import java.io.File;
-
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 /**
+ * &copy 2012 CoverMyMeds <br/>
  * Used in combination with the JCommander class to hold parsed command line 
  * argument values.
  * <br/>
@@ -20,43 +19,42 @@ import com.beust.jcommander.converters.FileConverter;
  *		new JCommander(parsedObject, args);
  * </code>
  * </pre>
- * <div>
  * 	@author Juan Roman
- * </div>
- * &copy 2012 CoverMyMeds
  *
  */
-public class JCommanderObject {
+public class JCommanderOptions {
 
-	@Parameter(names = { "-a", "--api-key" }, description = "API key. Assigned by CMM", required = true)
-	private String apiKey;
-
+	
 	@Parameter(names = { "-u", "--username" }, description = "username with which to authenticate", required = true)
 	private String username;
 
 	@Parameter(names = { "-p", "--password" }, description = "password with which to authenticate", required = true)
 	private String password;
-
-	@Parameter(names = { "-v", "--verbose" }, description = "show verbose output")
-	private Boolean verbose = false;
+	
+	@Parameter(names = { "-a", "--api-key" }, description = "API key. Assigned by CMM", required = true)
+	private String apiKey;
 
 	@Parameter(names = { "-s", "--service" }, description = "URL of the service which to POST")
 	private String serviceUrl = "https://claims.covermymeds.com/cmmimport/";
-
-	@Parameter(names = { "-x", "--suppress-browser" }, description = "suppress opening a browser window for each URL")
-	private Boolean suppress = false;
-
+	
 	@Parameter(names = { "-c", "--claim" }, description = "File where claim is present", converter = FileConverter.class)
 	private File claimFile;
 
-	@Parameter(names = { "-" }, description = "Used when claim will be provided through stdin")
+	@Parameter(names = { "-" }, description = "Used when claim will be provided through standard input")
 	private Boolean readFromStdin = false;
+	
+	@Parameter(names = { "-x", "--suppress-browser" }, description = "suppress opening a browser window")
+	private Boolean suppress = false;
+	
+	@Parameter(names = { "-v", "--verbose" }, description = "show verbose output")
+	private Boolean verbose = false;	
 
+	
 	/**
 	 * Returns the file holding the claim or <code>null</code> if not specified.
 	 * @return the file holding the claim or <code>null</code> if not specified
 	 */
-	public File getClaimInFile() {
+	public File getClaimFile() {
 		return claimFile;
 	}
 
@@ -104,7 +102,7 @@ public class JCommanderObject {
 	 * Returns the url
 	 * @return the url 
 	 */
-	public String getService_url() {
+	public String getServiceUrl() {
 		return serviceUrl;
 	}
 
