@@ -2,12 +2,33 @@ package com.covermymeds.claimserverpost;
 
 import java.io.File;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+/**
+ * Used in combination with the JCommander class to hold parsed command line 
+ * argument values.
+ * <br/>
+ * The usual execution flow can be demonstrated by the code snippet below:
+ * <br/>
+ * <br/>
+ * <pre>
+ * <code>
+ * 		String []args = {"-u","username","-p","password","-a","apikey","-"};
+ *		JCommanderObject parsedObject = new JCommanderObject();
+ *		new JCommander(parsedObject, args);
+ * </code>
+ * </pre>
+ * <div>
+ * 	@author Juan Roman
+ * </div>
+ * &copy 2012 CoverMyMeds
+ *
+ */
 public class JCommanderObject {
 
-	@Parameter(names = { "-a", "--api_key" }, description = "API key. Assigned by CMM", required = true)
+	@Parameter(names = { "-a", "--api-key" }, description = "API key. Assigned by CMM", required = true)
 	private String apiKey;
 
 	@Parameter(names = { "-u", "--username" }, description = "username with which to authenticate", required = true)
@@ -31,35 +52,67 @@ public class JCommanderObject {
 	@Parameter(names = { "-" }, description = "Used when claim will be provided through stdin")
 	private Boolean readFromStdin = false;
 
+	/**
+	 * Returns the file holding the claim or <code>null</code> if not specified.
+	 * @return the file holding the claim or <code>null</code> if not specified
+	 */
 	public File getClaimInFile() {
 		return claimFile;
 	}
 
+	/**
+	 * Returns <code>true</code> if a claim will be entered using standard input.
+	 * @return <code>true</code> if a claim will be entered using standard input
+	 */
 	public boolean readFromStdin() {
 		return readFromStdin;
 	}
 
+	/**
+	 * Returns the apiKey passed into 
+	 * @return
+	 */
 	public String getApiKey() {
 		return apiKey;
 	}
 
+	/**
+	 * Returns the username
+	 * @return the username
+	 */
 	public String getUsername() {
 		return username;
 	}
-
+	
+	/**
+	 * Returns the password
+	 * @return the password
+	 */
 	public String getPassword() {
 		return password;
 	}
 
-	public Boolean isVerbose() {
+	/**
+	 * Returns <code>true</code> if the verbose option has been set
+	 * @return <code>true</code> if the verbose option has been set
+	 */
+	public boolean isVerbose() {
 		return verbose;
 	}
 
+	/**
+	 * Returns the url
+	 * @return the url 
+	 */
 	public String getService_url() {
 		return serviceUrl;
 	}
 
-	public Boolean isSuppress() {
+	/**
+	 * Returns <code>true</code> if the suppressed option has been set.
+	 * @return <code>true</code> if the suppressed option has been set
+	 */
+	public boolean isSuppress() {
 		return suppress;
 	}
 }

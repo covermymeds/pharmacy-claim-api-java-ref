@@ -7,29 +7,46 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 
-/*
- * Http Post to a claim Server and open point browser to response
- * 
- * Apache HttpClient 4.2
- * 
- * JCommander 1.26
- * 
- * 
+/**
+ * A Java reference to making a request using the
+ * <a href="http://www.covermymeds.com/main/pharmacy_claim_api#what-data-to-send">
+ * CoverMyMeds' Pharmacy API</a>.
+ * <br/>
+ * <br/>
+ * <div>
+ * 	<b>Necessary libraries :</b>
+ * 	<ul>
+ * 		<li>Apache HttpClient 4.2</li>
+ * 		<li>JCommander 1.26</li>
+ * 	</ul>
+ * </div>
+ * <div>
+ * 	@author Juan Roman
+ * </div>
+ * &copy 2012 CoverMyMeds
+ *
  */
-
-//TODO Document with javadoc, Specify need for 2 libraries.
 public class ClaimServerPost {
 
-	/*
-	 * Sample Post request to claims server.
+	/**
+	 * Using the command line arguments passed in, creates a JCommanderObject and
+	 * uses its parameters to send a http request to a claim server. Unless specified
+	 * not to, using the "-x or --suppress-browser" flag, opens a browser to each
+	 * url returned in the response.
+	 * @param args the command line options passed in.
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws ClientProtocolException,
 			IOException, URISyntaxException {
 
 		JCommanderObject parsedObject = ClaimServerPostUtils.parseCommandLine(args);
 
-		// Validate that a claim is present
-		if (parsedObject != null && ClaimServerPostUtils.claimSupplied(parsedObject.getClaimInFile(), parsedObject.readFromStdin())) {
+		// Check that either a correct claim file has been given or the user has enabled the option
+		// to enter it themselves
+		if (parsedObject != null && (ClaimServerPostUtils.claimFileExists(parsedObject.getClaimInFile())
+				|| parsedObject.readFromStdin())) {
 
 			UrlEncodedFormEntity encodedParameters = ClaimServerPostUtils
 					.encodeParameters(parsedObject);

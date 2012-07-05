@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
@@ -22,29 +21,183 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+/**
+ * Utility class used to assist in the setting up, initiating, and processing of 
+ * http requests.
+ * <div>
+ * 	@author Juan Roman
+ * </div>
+ * &copy 2012 CoverMyMeds
+ */
 public class ClaimServerPostUtils {
 
-	private static Map<Integer, String> errors = ClaimServerPostUtils
-			.createErrors();
+	/**
+	 * Map containing all basic http errors for a quick reference
+	 */
+	private static Map<Integer, String> errors = ClaimServerPostUtils.createErrors();
 
-	private static final char START_OF_CLAIM = '\2';
-	private static final char END_OF_CLAIM = '\3';
-
+	/**
+	 * STX character
+	 */
+	public static final char START_OF_CLAIM = '\2';
 	
-	public static boolean claimSupplied(File claimFile, boolean readFromStdin) {
-		return ((claimFile != null && claimFile.exists()) || readFromStdin);
+	/**
+	 * ETX character
+	 */
+	public static final char END_OF_CLAIM = '\3';
+
+
+	/**
+	 * Tests that the specified file is not null and exists.
+	 * @param claimFile the file to be tested
+	 * @return true if the file is not <code>null</code> and it exists
+	 */
+	public static boolean claimFileExists(File claimFile) {
+		return (claimFile != null && claimFile.exists());
 	}
 
-	public static String getClaim(File claimFile, boolean readFromStdin)
+	/**
+	 * Returns a JCommanderObject whose fields are populated passed
+	 * on the passed arguments or <code>null</code> if any parsing errors
+	 * occur.
+	 * @param args the arguments to be parsed
+	 * @return a populated JCommanderObject or null if parsing errors
+	 * occur
+	 */
+	public static JCommanderObject parseCommandLine(String[] args) {
+		JCommanderObject parsedObject = null;
+		try {
+			parsedObject = new JCommanderObject();
+			new JCommander(parsedObject, args);
+		} catch (ParameterException e) {
+			System.err.println("Error: " + e.getMessage());
+			parsedObject = null;
+		}
+		return parsedObject;
+	}
+
+	/**
+	 * Returns a URLEncodedFormEntity that holds the parsedObject's 
+	 * 			parameters: username,password,claim, and api key.
+	 * @param parsedObject - the object holding the values to be encoded
+	 * @return a URLEncodedFormEntity that holds the parsedObject's 
+	 * 			parameters: username,password,claim, and api key
+	 * @throws IOException
+	 */
+	public static UrlEncodedFormEntity encodeParameters(
+			JCommanderObject parsedObject) throws IOException {
+		List<BasicNameValuePair> params = Arrays.asList(
+				new BasicNameValuePair("username", parsedObject.getUsername()),
+				new BasicNameValuePair("password", parsedObject.getPassword()),
+				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
+						.getClaim(parsedObject.getClaimInFile(),
+								parsedObject.readFromStdin())),
+				new BasicNameValuePair("api_dkey", parsedObject.getApiKey()));
+//TODO change back to api_key
+		return new UrlEncodedFormEntity(params, "UTF-8");
+	}
+
+	/**
+	 * Sends a request to the serviceURL using the encodedParameters. Returns a 
+	 * list of the returned urls as strings or <code>null</code> if an error occurs.
+	 * @param serviceUrl the url to send the request to
+	 * @param encodedParameters the parameters to use in the request
+	 * @param verbose specifies whether detailed information should be displayed while
+	 * making the request
+	 * @return a list of the returned urls as strings or <code>null</code>
+	 * if an error occurs.
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static List<String> sendHttpRequest(String serviceUrl,
+			UrlEncodedFormEntity encodedParameters, boolean verbose)
+			throws ClientProtocolException, IOException {
+
+		HttpClient client = new DefaultHttpClient();
+		HttpPost httpPost = new HttpPost(serviceUrl);
+		httpPost.setEntity(encodedParameters);
+
+		List<String> addresses = null;
+		try {
+			String response = client.execute(httpPost,new BasicResponseHandler());
+			addresses = Arrays.asList(response.split("\n"));
+			if(verbose) {
+				for(String address : addresses) {
+					System.out.println("Request created at: " + address);
+				}
+			}
+		}
+		catch (HttpResponseException e) {
+			String errorMessage = String.valueOf(e.getStatusCode()) + " "
+					+ e.getMessage();
+			errorMessage = (verbose ? errorMessage + " "
+					+ errors.get(e.getStatusCode()) : errorMessage);
+			System.err.println(errorMessage);
+		} finally {
+		     // When HttpClient instance is no longer needed,
+		     // shut down the connection manager to ensure
+		     // immediate deallocation of all system resources
+			client.getConnectionManager().shutdown();
+		}
+		return addresses;
+	}
+
+	/**
+	 * Opens the the user's default browser to each address in the list
+	 * of addresses.
+	 * @param addresses the string urls to open the default browser to.
+	 * @param verbose specifies whether detailed information should be displayed while
+	 * opening the browser
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public static void openBrowser(List<String> addresses, boolean verbose)
+			throws URISyntaxException, IOException {
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				for (String address : addresses) {
+					if (verbose) {
+						System.out.println("Opening browser to: " + address);
+					}
+					desktop.browse(new URI(address));
+				}
+			} else {
+				System.err.println("Browse action is not supported.");
+			}
+		} else {
+			System.err.println("Desktop is not supported.");
+		}
+	}
+
+	/**
+	 * Returns a claim either from a file or from standard input.
+	 * 
+	 * @param claimFile the file containing the claim.
+	 * @param readFromStdin flag used to specify that a claim will be
+	 * 						entered using standard input.
+	 * @return a string representation of either the specified file or
+	 * 			the claim that was entered from standard input.
+	 * @throws IOException
+	 */
+	private static String getClaim(File claimFile, boolean readFromStdin)
 			throws IOException {
+		/* 
+		 * Reading from stdin take precedence over the file so check
+		 * it first 
+		 */
 		if (readFromStdin) {
 			System.out.println("Enter claim:");
 			Scanner stdin = new Scanner(System.in);
 			String input = stdin.nextLine();
+			
+			/*
+			 * Check that the STX and ETX characters surround the claim and
+			 * if not wrap the them around the claim
+			 */
 			if (input.length() >= 2 && input.charAt(0) != START_OF_CLAIM) {
 				input = START_OF_CLAIM + input;
 			}
@@ -73,79 +226,10 @@ public class ClaimServerPostUtils {
 		}
 	}
 
-	public static JCommanderObject parseCommandLine(String[] args) {
-		JCommanderObject parsedObject = null;
-		try {
-			parsedObject = new JCommanderObject();
-			new JCommander(parsedObject, args);
-		} catch (ParameterException e) {
-			System.err.println("Error: " + e.getMessage());
-			parsedObject = null;
-		}
-		return parsedObject;
-	}
-
-	public static UrlEncodedFormEntity encodeParameters(
-			JCommanderObject parsedObject) throws IOException {
-		List<BasicNameValuePair> params = Arrays.asList(
-				new BasicNameValuePair("username", parsedObject.getUsername()),
-				new BasicNameValuePair("password", parsedObject.getPassword()),
-				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
-						.getClaim(parsedObject.getClaimInFile(),
-								parsedObject.readFromStdin())),
-				new BasicNameValuePair("api_key", parsedObject.getApiKey()));
-
-		return new UrlEncodedFormEntity(params, "UTF-8");
-	}
-
-	public static List<String> sendHttpRequest(String serviceUrl,
-			UrlEncodedFormEntity encodedParameters, boolean verbose)
-			throws ClientProtocolException, IOException {
-
-		HttpClient client = new DefaultHttpClient();
-		HttpPost httpPost = new HttpPost(serviceUrl);
-		httpPost.setEntity(encodedParameters);
-
-		List<String> addresses = null;
-		try {
-			String response = client.execute(httpPost,
-					new BasicResponseHandler());
-
-			addresses = Arrays.asList(response.split("\n"));
-		}
-		catch (HttpResponseException e) {
-			String errorMessage = String.valueOf(e.getStatusCode()) + " "
-					+ e.getMessage();
-			errorMessage = (verbose ? errorMessage + " "
-					+ errors.get(e.getStatusCode()) : errorMessage);
-			System.err.println(errorMessage);
-		} finally {
-			client.getConnectionManager().shutdown();
-		}
-		return addresses;
-	}
-
-	public static void openBrowser(List<String> addresses, boolean verbose)
-			throws IOException, URISyntaxException {
-		if (Desktop.isDesktopSupported()) {
-			Desktop desktop = Desktop.getDesktop();
-			if (desktop.isSupported(Desktop.Action.BROWSE)) {
-				for (String address : addresses) {
-					if (verbose) {
-						System.out.println("Opening browser to: " + address);
-					}
-					desktop.browse(new URI(address));
-				}
-			} else {
-				System.err.println("Browse action is not supported.");
-			}
-		} else {
-			System.err.println("Desktop is not supported.");
-		}
-	}
-
-	/*
-	 * Returns a map conatining errors
+	/**
+	 * Returns a map containing http error messages, associated with their
+	 * error code.
+	 * @return
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();
@@ -153,31 +237,27 @@ public class ClaimServerPostUtils {
 				+ " try one more time, then contact CoverMyMeds at 1-866-452-"
 				+ "5017/help@covermymeds.com and they will help you diagnose"
 				+ " this issue.");
-		result.put(
-				403,
-				"Oops, login failed for the username or password that"
-						+ " was submitted. Please check the username and password in your"
-						+ " account settings in your Pharmacy System and at the CMM website to"
-						+ " make sure they match. If you still have trouble, please contact"
-						+ " CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
-						+ " help you fix this issue.");
-		result.put(
-				404,
-				"Oops, there was a problem. Please check the username and"
-						+ " password in your account settings in your Pharmacy System and at the"
-						+ " CMM website to make sure they match. If you still have trouble, please"
-						+ " contact CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
-						+ " help you fix this issue.");
-		result.put(
-				408,
-				"Oops, there was a timeout. Please try the request again in one"
-						+ " minute. If you still have trouble, please contact CoverMyMeds at 1-866-452"
-						+ "-5017/help@covermymeds.com and they will help you fix this issue.");
-		result.put(
-				500,
-				"Oops, there was a problem. Please try the request again in one minute."
-						+ " If you still have trouble, please contact CoverMyMeds at 1-866-452-5017"
-						+ "/help@covermymeds.com and they will help you diagnose this issue.");
+		result.put(403, "Oops, login failed for the username or password that"
+				+ " was submitted. Please check the username and password in your"
+				+ " account settings in your Pharmacy System and at the CMM website to"
+				+ " make sure they match. If you still have trouble, please contact"
+				+ " CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
+				+ " help you fix this issue.");
+		result.put(404, "Oops, there was a problem. Please check the username and"
+				+ " password in your account settings in your Pharmacy System and at the"
+				+ " CMM website to make sure they match. If you still have trouble, please"
+				+ " contact CoverMyMeds at 1-866-452-5017/help@covermymeds.com and they will"
+				+ " help you fix this issue.");
+		result.put(408, "Oops, there was a timeout. Please try the request again in one"
+				+ " minute. If you still have trouble, please contact CoverMyMeds at 1-866-452"
+				+ "-5017/help@covermymeds.com and they will help you fix this issue.");
+		result.put(500, "Oops, there was a problem. Please try the request again in one minute."
+				+ " If you still have trouble, please contact CoverMyMeds at 1-866-452-5017"
+				+ "/help@covermymeds.com and they will help you diagnose this issue.");
 		return Collections.unmodifiableMap(result);
+	}
+	
+	private ClaimServerPostUtils() {
+		//disable external instantiation
 	}
 }
