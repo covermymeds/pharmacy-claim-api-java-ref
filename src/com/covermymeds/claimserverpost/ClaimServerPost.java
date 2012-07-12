@@ -1,3 +1,4 @@
+// Copyright 2012 CoverMyMeds
 package com.covermymeds.claimserverpost;
 
 import java.util.List;
@@ -28,11 +29,10 @@ import org.apache.http.client.ClientProtocolException;
 public class ClaimServerPost {
 
 	/**
-	 * Using the command line arguments passed in, creates a JCommanderObject and
-	 * uses its parameters to send a http request to a claim server. Unless specified
-	 * not to, using the "-x or --suppress-browser" flag, opens a browser to each
-	 * url returned in the response.
-	 * @param args the command line options passed in.
+	 * Uses the  arguments passed in to send a http request to a claim server. 
+	 * Unless specified not to, using the "-x" or "--suppress-browser" flag, 
+	 * opens a browser to each url returned in the response.
+	 * @param args the options passed in to be used for sending the http request
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws URISyntaxException

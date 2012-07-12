@@ -1,3 +1,4 @@
+// Copyright 2012 CoverMyMeds
 package com.covermymeds.claimserverpost;
 
 import java.awt.Desktop;
@@ -49,16 +50,16 @@ public class ClaimServerPostUtils {
 
 
 	/**
-	 * Tests that the specified file is not null and exists.
+	 * Returns <code>true</code> if claimFile is not <code>null</code> and exists.
 	 * @param claimFile the file to be tested
-	 * @return true if the file is not <code>null</code> and it exists
+	 * @return true if the claimFile is not <code>null</code> and exists
 	 */
 	public static boolean claimFileExists(File claimFile) {
 		return (claimFile != null && claimFile.exists());
 	}
 
 	/**
-	 * Returns a populate <code>JCommanderOptions</code> object or <code>null</code> 
+	 * Returns a populated <code>JCommanderOptions</code> object or <code>null</code> 
 	 * if any parsing errors occur.
 	 * @param args the arguments to be parsed
 	 * @return a populated <code>JCommanderOptions</code> object or <code>null</code>
@@ -79,10 +80,10 @@ public class ClaimServerPostUtils {
 	}
 
 	/**
-	 * Returns a URLEncodedFormEntity that holds the parsedOptions's 
-	 * 			parameters: username,password,claim, and api key.
+	 * Returns a <code>URLEncodedFormEntity</code> that holds the parsedOptions's 
+	 * 			parameters: username, password, claim, and api key.
 	 * @param parsedOptions the object holding the values to be encoded
-	 * @return a URLEncodedFormEntity that holds the parsedOptions's
+	 * @return a <code>URLEncodedFormEntity</code> that holds the parsedOptions's
 	 * 			parameters: username, password, claim, and api key
 	 * @throws IOException
 	 */
@@ -101,11 +102,12 @@ public class ClaimServerPostUtils {
 
 	/**
 	 * Sends a request to the serviceURL using the encodedParameters. Returns a 
-	 * list of the returned urls as strings or <code>null</code> if an error occurs.
+	 * <code>List</code> of the urls in the response as strings or <code>null</code> 
+	 * if an error occurs.
 	 * @param serviceUrl the url to send the request to
 	 * @param encodedParameters the parameters being sent in the request
 	 * @param verbose specifies whether output should be verbose or not.
-	 * @return a list of the returned urls as strings or <code>null</code>
+	 * @return a <code>List</code> of the urls in the response as strings or <code>null</code> 
 	 * if an error occurs.
 	 * @throws ClientProtocolException
 	 * @throws IOException
@@ -142,7 +144,7 @@ public class ClaimServerPostUtils {
 	}
 
 	/**
-	 * Opens the the user's default browser to each address in the list
+	 * Opens the the default browser to each address in the list
 	 * of addresses.
 	 * @param addresses the string urls to open the default browser to.
 	 * @param verbose specifies whether output should be verbose or not.
@@ -223,9 +225,9 @@ public class ClaimServerPostUtils {
 
 	/**
 	 * Returns a map containing http error messages, associated with their
-	 * error code.
-	 * @return a map containting basic http errors referenced by their error 
-	 * codes.
+	 * error codes.
+	 * @return a map containting http error messages, associated with their
+	 *  error codes.
 	 */
 	private static Map<Integer, String> createErrors() {
 		Map<Integer, String> result = new HashMap<Integer, String>();

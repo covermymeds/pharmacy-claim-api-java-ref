@@ -1,3 +1,4 @@
+// Copyright 2012 CoverMyMeds
 package com.covermymeds.claimserverpost;
 
 import java.io.File;
@@ -6,8 +7,8 @@ import com.beust.jcommander.converters.FileConverter;
 
 /**
  * &copy 2012 CoverMyMeds <br/>
- * Used in combination with the JCommander class to hold parsed command line 
- * argument values.
+ * Used in combination with the JCommander library to hold parsed argument 
+ * values.
  * <br/>
  * The usual execution flow can be demonstrated by the code snippet below:
  * <br/>
