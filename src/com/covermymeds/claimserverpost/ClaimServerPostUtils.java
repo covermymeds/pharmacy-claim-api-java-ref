@@ -31,7 +31,7 @@ import com.beust.jcommander.ParameterException;
  * http requests.
  * 	@author Juan Roman
  */
-public class ClaimServerPostUtils {
+public final class ClaimServerPostUtils {
 
 	/**
 	 * Map containing all basic http errors for a quick reference
