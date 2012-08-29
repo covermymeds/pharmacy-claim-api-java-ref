@@ -38,6 +38,9 @@ public class JCommanderOptions {
 	@Parameter(names = { "-s", "--service" }, description = "URL of the service which to POST")
 	private String serviceUrl = "https://claims.covermymeds.com/cmmimport/";
 	
+	@Parameter(names = { "-f", "--fax"}, description = "Physician fax number")
+	private String faxNumber;
+	
 	@Parameter(names = { "-c", "--claim" }, description = "File where claim is present", converter = FileConverter.class)
 	private File claimFile;
 
@@ -95,6 +98,14 @@ public class JCommanderOptions {
 	 */
 	public String getPassword() {
 		return password;
+	}
+	
+	/**
+	 * Returns the fax number
+	 * @return the fax number
+	 */
+	public String getFaxNumber() {
+		return faxNumber;
 	}
 
 	/**

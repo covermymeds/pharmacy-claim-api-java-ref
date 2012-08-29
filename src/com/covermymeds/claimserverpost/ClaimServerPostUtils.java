@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,13 +90,21 @@ public final class ClaimServerPostUtils {
 	 */
 	public static UrlEncodedFormEntity encodeParameters(
 			JCommanderOptions parsedOptions) throws IOException {
-		List<BasicNameValuePair> params = Arrays.asList(
+		List<BasicNameValuePair> params =  new ArrayList<BasicNameValuePair>();
+		params.addAll(Arrays.asList(
 				new BasicNameValuePair("username", parsedOptions.getUsername()),
 				new BasicNameValuePair("password", parsedOptions.getPassword()),
 				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
 						.getClaim(parsedOptions.getClaimFile(),
 								parsedOptions.readFromStdin())),
-				new BasicNameValuePair("api_dkey", parsedOptions.getApiKey()));
+				new BasicNameValuePair("api_dkey", parsedOptions.getApiKey())));
+		
+		//Add fax to parameters if present
+		String faxNumber = parsedOptions.getFaxNumber();
+		if(faxNumber != null) {
+			params.add(new BasicNameValuePair("physician_fax", faxNumber));
+		}
+		
 		//TODO change back to api_key
 		return new UrlEncodedFormEntity(params, "UTF-8");
 	}
