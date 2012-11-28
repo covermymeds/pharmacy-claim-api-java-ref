@@ -5,22 +5,16 @@
 	<property name="lib.dir" value="lib" />
 	<property name="doc.dir" value="doc" />
 	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="jar.classes.dir" value="${jar.dir}/classes" />
+	<property name="jars.dir" value="${build.dir}/jars" />
+	<property name="jars.classes.dir" value="${jars.dir}/classes" />
 	<property name="main.class" value="com.covermymeds.claimserverpost.ClaimServerPost" />
 
 	<path id="class.path">
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-		</fileset>
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
 	</path>
 
 	<target name="clean" description="Removing the all generated files.">
 		<delete dir="${build.dir}" />
-	</target>
-
-	<target name="clean-docs">
-		<delete dir="${doc.dir}" />
 	</target>
 	
 	<target name="build" description="Compilation of all source code.">
@@ -31,7 +25,7 @@
 	</target>
 
 	<target name="input-runargs" unless="args" description="prompt for command line arguments if not present">
-		<input addproperty="args" message="Type command line arguments" />
+		<input addproperty="args" message="Type command line arguments:" />
 	</target>
 	
 	<target name="run" depends="build, input-runargs" description="Running Program">
@@ -45,23 +39,23 @@
 	</target>
 
 	<target name="setup-jar-classes">
-		<mkdir dir="${jar.classes.dir}" />
-		<copy todir="${jar.classes.dir}">
+		<mkdir dir="${jars.classes.dir}" />
+		<copy todir="${jars.classes.dir}">
 			<fileset dir="${classes.dir}">
 				<include name="**\*.class" />
 			</fileset>
 		</copy>
-		<unzip dest="${jar.classes.dir}">
+		<unzip dest="${jars.classes.dir}">
 			<fileset dir="${lib.dir}" includes="*.jar" />
 		</unzip>
 	</target>
 
 	<target name="clean-jar-classes">
-		<delete dir="${jar.classes.dir}" />
+		<delete dir="${jars.classes.dir}" />
 	</target>
 
 	<target name="dist" depends="build, setup-jar-classes">
-		<jar basedir="${jar.classes.dir}" destfile="${jar.dir}/ClaimServerPost.jar">
+		<jar basedir="${jars.classes.dir}" destfile="${jars.dir}/ClaimServerPost.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="${main.class}" />
