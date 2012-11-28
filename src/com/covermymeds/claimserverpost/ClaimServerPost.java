@@ -42,8 +42,6 @@ public class ClaimServerPost {
 
 		JCommanderOptions parsedOptions = ClaimServerPostUtils.parseCommandLine(args);
 
-		// Check that either a correct claim file has been given or the user has enabled the option
-		// to enter it themselves
 		if (parsedOptions != null) {
 
 			UrlEncodedFormEntity encodedParameters = ClaimServerPostUtils
@@ -58,9 +56,5 @@ public class ClaimServerPost {
 			}
 			
 		}
-	}
-	
-	private ClaimServerPost() {
-		//disable external instantiation
 	}
 }

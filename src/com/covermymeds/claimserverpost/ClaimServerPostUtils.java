@@ -71,7 +71,7 @@ public final class ClaimServerPostUtils {
 		try {
 			parsedOptions = new JCommanderOptions();
 			//Creating a new instance of JCommander initiates parsing
-			//and populates passed in object
+			//and populates the passed in object
 			new JCommander(parsedOptions, args);
 		} catch (ParameterException e) {
 			System.err.println("Error: " + e.getMessage());
