@@ -43,12 +43,9 @@ public class JCommanderOptions {
 	
 	@Parameter(names = { "-c", "--claim" }, description = "File where claim is present", converter = FileConverter.class)
 	private File claimFile;
-
-	@Parameter(names = { "-" }, description = "Used when claim will be provided through standard input")
-	private Boolean readFromStdin = false;
 	
 	@Parameter(names = { "-x", "--suppress-browser" }, description = "suppress opening a browser window")
-	private Boolean suppress = false;
+	private Boolean suppressed = false;
 	
 	@Parameter(names = { "-v", "--verbose" }, description = "show verbose output")
 	private Boolean verbose = false;	
@@ -66,14 +63,6 @@ public class JCommanderOptions {
 	 */
 	public File getClaimFile() {
 		return claimFile;
-	}
-
-	/**
-	 * Returns <code>true</code> if a claim will be entered using standard input.
-	 * @return <code>true</code> if a claim will be entered using standard input
-	 */
-	public boolean readFromStdin() {
-		return readFromStdin;
 	}
 
 	/**
@@ -128,7 +117,7 @@ public class JCommanderOptions {
 	 * Returns <code>true</code> if the suppressed option has been set.
 	 * @return <code>true</code> if the suppressed option has been set
 	 */
-	public boolean isSuppress() {
-		return suppress;
+	public boolean isSuppressed() {
+		return suppressed;
 	}
 }

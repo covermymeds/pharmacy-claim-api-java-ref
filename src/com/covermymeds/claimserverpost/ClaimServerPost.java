@@ -44,8 +44,7 @@ public class ClaimServerPost {
 
 		// Check that either a correct claim file has been given or the user has enabled the option
 		// to enter it themselves
-		if (parsedOptions != null && (ClaimServerPostUtils.claimFileExists(parsedOptions.getClaimFile())
-				|| parsedOptions.readFromStdin())) {
+		if (parsedOptions != null) {
 
 			UrlEncodedFormEntity encodedParameters = ClaimServerPostUtils
 					.encodeParameters(parsedOptions);
@@ -54,12 +53,10 @@ public class ClaimServerPost {
 					parsedOptions.getServiceUrl(), encodedParameters,
 					parsedOptions.isVerbose());
 			
-			if(addresses != null && !parsedOptions.isSuppress()) {
+			if(addresses != null && !parsedOptions.isSuppressed()) {
 				ClaimServerPostUtils.openBrowser(addresses, parsedOptions.isVerbose());
 			}
 			
-		} else if(parsedOptions != null){
-			System.err.println("Error: must specify a claim file argument or '-' to read from stdin");
 		}
 	}
 	

@@ -95,8 +95,7 @@ public final class ClaimServerPostUtils {
 				new BasicNameValuePair("username", parsedOptions.getUsername()),
 				new BasicNameValuePair("password", parsedOptions.getPassword()),
 				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
-						.getClaim(parsedOptions.getClaimFile(),
-								parsedOptions.readFromStdin())),
+						.getClaim(parsedOptions.getClaimFile())),
 				new BasicNameValuePair("api_dkey", parsedOptions.getApiKey())));
 		
 		//Add fax to parameters if present
@@ -189,13 +188,13 @@ public final class ClaimServerPostUtils {
 	 * 			the claim that was entered from standard input.
 	 * @throws IOException
 	 */
-	private static String getClaim(File claimFile, boolean readFromStdin)
+	private static String getClaim(File claimFile)
 			throws IOException {
 		/* 
 		 * Reading from stdin take precedence over the file so check
 		 * it first
 		 */
-		if (readFromStdin) {
+		if (claimFile == null) {
 			System.out.println("Enter claim:");
 			Scanner stdin = new Scanner(System.in);
 			String input = stdin.nextLine();
