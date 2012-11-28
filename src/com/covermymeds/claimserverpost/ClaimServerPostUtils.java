@@ -96,7 +96,7 @@ public final class ClaimServerPostUtils {
 				new BasicNameValuePair("password", parsedOptions.getPassword()),
 				new BasicNameValuePair("ncpdp_claim", ClaimServerPostUtils
 						.getClaim(parsedOptions.getClaimFile())),
-				new BasicNameValuePair("api_dkey", parsedOptions.getApiKey())));
+				new BasicNameValuePair("api_key", parsedOptions.getApiKey())));
 		
 		//Add fax to parameters if present
 		String faxNumber = parsedOptions.getFaxNumber();
@@ -104,7 +104,6 @@ public final class ClaimServerPostUtils {
 			params.add(new BasicNameValuePair("physician_fax", faxNumber));
 		}
 		
-		//TODO change back to api_key
 		return new UrlEncodedFormEntity(params, "UTF-8");
 	}
 
@@ -182,8 +181,6 @@ public final class ClaimServerPostUtils {
 	 * Returns a claim either from a file or from standard input.
 	 * 
 	 * @param claimFile the file containing the claim.
-	 * @param readFromStdin flag used to specify that a claim will be
-	 * 						entered using standard input.
 	 * @return a string representation of either the specified file or
 	 * 			the claim that was entered from standard input.
 	 * @throws IOException
