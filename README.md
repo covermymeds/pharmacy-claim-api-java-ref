@@ -6,7 +6,7 @@ Integrate your pharmacy system with CoverMyMeds to create an "Easy Button" for P
 *	[Full Technical Documentation](http://www.covermymeds.com/main/pharmacy_claim_api)
 
 Use our [Pharmacy System](http://pharmacysystems.covermymeds.com/) page to see a list of systems that integrate with CoverMyMeds or to contact your system vendor to request integration.
-This reference implementation is offered to assist in integrating with the CoverMyMeds Claim API using the Eclipse enviornment and Java 6. The user passes command line style arguments and values, i.e --verbose, and the passed in values are used to send a claim to the API. Its uses both the [JCommander 1.26](http://jcommander.org) to parse the passed in arguments and [Apache HttpClient 4.2.1](http://hc.apache.org/httpcomponents-client-ga/index.html) to submit the claim and process its response. Most of the code used to submit the claim, as well as response and error handling, is encapsulated in the ClaimServerPostUtils.java file.
+This reference implementation is offered to assist in integrating with the CoverMyMeds Claim API using the Eclipse enviornment with Java 6. The user passes command line style arguments and values, i.e --verbose, and the passed in values are used to send a claim to the API. Its uses both [JCommander 1.26](http://jcommander.org) to parse the passed in arguments and [Apache HttpClient 4.2.1](http://hc.apache.org/httpcomponents-client-ga/index.html) to submit the claim and process its response. Most of the code used to submit the claim, as well as response and error handling, is encapsulated in the ClaimServerPostUtils.java file.
 
 ##Getting Started
 *	Sign up for a free account to learn how CoverMyMeds works. <https://www.covermymeds.com/signup>
