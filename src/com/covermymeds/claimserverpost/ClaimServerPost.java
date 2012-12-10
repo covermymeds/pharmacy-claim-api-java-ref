@@ -10,7 +10,7 @@ import org.apache.http.client.ClientProtocolException;
 
 /**
  * &copy 2012 CoverMyMeds <br/>
- * A Java reference to making a request using the
+ * A Java reference to the
  * <a href="http://www.covermymeds.com/main/pharmacy_claim_api">
  * CoverMyMeds' Pharmacy API</a>.
  * <br/>
@@ -29,9 +29,9 @@ import org.apache.http.client.ClientProtocolException;
 public class ClaimServerPost {
 
 	/**
-	 * Uses the  arguments passed in to send a http request to a claim server. 
-	 * Unless specified not to, using the "-x" or "--suppress-browser" flag, 
-	 * opens a browser to each url returned in the response.
+	 * Uses the  arguments passed in to send a http request to the CoverMyMeds 
+	 * claim server. Unless specified not to, using the "-x" or "--suppress-browser" 
+	 * flag, opens a browser to each url returned in the response.
 	 * @param args the options passed in to be used for sending the http request
 	 * @throws ClientProtocolException
 	 * @throws IOException
@@ -40,8 +40,10 @@ public class ClaimServerPost {
 	public static void main(String[] args) throws ClientProtocolException,
 			IOException, URISyntaxException {
 
+		// Create parsed object
 		JCommanderOptions parsedOptions = ClaimServerPostUtils.parseCommandLine(args);
 
+		// If the parsed object is not null then the input was valid
 		if (parsedOptions != null) {
 
 			UrlEncodedFormEntity encodedParameters = ClaimServerPostUtils
@@ -51,6 +53,8 @@ public class ClaimServerPost {
 					parsedOptions.getServiceUrl(), encodedParameters,
 					parsedOptions.isVerbose());
 			
+			// If any addresses were returned in the response and
+			// browse was not suppressed open browser to each address
 			if(addresses != null && !parsedOptions.isSuppressed()) {
 				ClaimServerPostUtils.openBrowser(addresses, parsedOptions.isVerbose());
 			}

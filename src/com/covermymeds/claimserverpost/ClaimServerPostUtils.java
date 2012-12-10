@@ -35,19 +35,19 @@ import com.beust.jcommander.ParameterException;
 public final class ClaimServerPostUtils {
 
 	/**
-	 * Map containing all basic http errors for a quick reference
+	 * Map containing http errors for a quick reference
 	 */
 	private static Map<Integer, String> errors = ClaimServerPostUtils.createErrors();
 
 	/**
 	 * STX character
 	 */
-	public static final char START_OF_CLAIM = '\2';
+	private static final char START_OF_CLAIM = '\2';
 	
 	/**
 	 * ETX character
 	 */
-	public static final char END_OF_CLAIM = '\3';
+	private static final char END_OF_CLAIM = '\3';
 
 
 	/**
@@ -98,7 +98,7 @@ public final class ClaimServerPostUtils {
 						.getClaim(parsedOptions.getClaimFile())),
 				new BasicNameValuePair("api_key", parsedOptions.getApiKey())));
 		
-		//Add fax to parameters if present
+		// Fax number is optional, so only add it if it is present
 		String faxNumber = parsedOptions.getFaxNumber();
 		if(faxNumber != null) {
 			params.add(new BasicNameValuePair("physician_fax", faxNumber));
@@ -123,13 +123,18 @@ public final class ClaimServerPostUtils {
 			UrlEncodedFormEntity encodedParameters, boolean verbose)
 			throws ClientProtocolException, IOException {
 
+		// Create HttpClient object to run the http post
 		HttpClient client = new DefaultHttpClient();
+		
+		// Create HttpPost obect with the service url and set its parameters to it
 		HttpPost httpPost = new HttpPost(serviceUrl);
 		httpPost.setEntity(encodedParameters);
 
 		List<String> addresses = null;
 		try {
 			String response = client.execute(httpPost,new BasicResponseHandler());
+			
+			// Each line of the response requests a created request.
 			addresses = Arrays.asList(response.split("\n"));
 			if(verbose) {
 				for(String address : addresses) {
@@ -138,6 +143,8 @@ public final class ClaimServerPostUtils {
 			}
 		}
 		catch (HttpResponseException e) {
+			// Grab general error message and append specific message if verbose
+			// is set
 			String errorMessage = String.valueOf(e.getStatusCode()) + " " + e.getMessage();
 			errorMessage = (verbose ? errorMessage + errors.get(e.getStatusCode()) : errorMessage);
 			System.err.println(errorMessage);
@@ -160,6 +167,8 @@ public final class ClaimServerPostUtils {
 	 */
 	public static void openBrowser(List<String> addresses, boolean verbose)
 			throws URISyntaxException, IOException {
+		// Uses the Desktop class, if it and its BROWSE action are supported,
+		// to open each address
 		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			if (desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -188,8 +197,8 @@ public final class ClaimServerPostUtils {
 	private static String getClaim(File claimFile)
 			throws IOException {
 		/* 
-		 * Reading from stdin take precedence over the file so check
-		 * it first
+		 * If a claimfile was not supplied prompt for and read the claim
+		 * from standard input.
 		 */
 		if (claimFile == null) {
 			System.out.println("Enter claim:");

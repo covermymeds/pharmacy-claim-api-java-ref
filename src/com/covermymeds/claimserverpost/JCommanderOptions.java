@@ -10,16 +10,15 @@ import com.beust.jcommander.converters.FileConverter;
  * Used in combination with the JCommander library to hold parsed argument 
  * values.
  * <br/>
- * The usual execution flow can be demonstrated by the code snippet below:
+ * The execution flow can be demonstrated by the following code snippet:
  * <br/>
  * <br/>
- * <pre>
  * <code>
- * 		String []args = {"-u","username","-p","password","-a","apikey","-"};
- *		JCommanderObject parsedObject = new JCommanderObject();
- *		new JCommander(parsedObject, args);
+ * 		String []args = {"-u","John","-p","root","-a","apikey"}; <br/>
+ *		JCommanderObject parsedObject = new JCommanderObject(); <br/>
+ *		new JCommander(parsedObject, args); <br/>
+ *		parsedObject.getUsername().Equals("John");
  * </code>
- * </pre>
  * 	@author Juan Roman
  *
  */
@@ -53,9 +52,7 @@ public class JCommanderOptions {
 	/**
 	 * Default constructor.
 	 */
-	public JCommanderOptions() {
-		//Default constructor
-	}
+	public JCommanderOptions() {}
 	
 	/**
 	 * Returns the file holding the claim or <code>null</code> if not specified.

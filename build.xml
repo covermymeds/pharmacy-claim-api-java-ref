@@ -13,7 +13,7 @@
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
 	</path>
 
-	<target name="clean" description="Removing the all generated files.">
+	<target name="clean" description="Removing the all generated files from build.">
 		<delete dir="${build.dir}" />
 	</target>
 	
@@ -24,7 +24,7 @@
 		</javac>
 	</target>
 
-	<target name="input-runargs" unless="args" description="prompt for command line arguments if not present">
+	<target name="input-runargs" unless="args" description="prompt for command line arguments if not present.">
 		<input addproperty="args" message="Type command line arguments:" />
 	</target>
 	
@@ -50,11 +50,11 @@
 		</unzip>
 	</target>
 
-	<target name="clean-jar-classes">
+	<target name="clean-jar-classes" description="Cleanes">
 		<delete dir="${jars.classes.dir}" />
 	</target>
 
-	<target name="dist" depends="build, setup-jar-classes">
+	<target name="dist" depends="build, setup-jar-classes" description="Package claim server code as a jar file.">
 		<jar basedir="${jars.classes.dir}" destfile="${jars.dir}/ClaimServerPost.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
